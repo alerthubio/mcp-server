@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.alerthubio/mcp-server",
+  "title": "AlertHub",
+  "description": "Send instant and scheduled multi-channel alerts to Push, Slack, Telegram, WhatsApp, and Email.",
+  "websiteUrl": "https://alerthub.io/docs",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/alerthubio/mcp-server",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/alerthubio/mcp-server:v1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ALERTHUB_USER_ID",
+          "description": "Your AlertHub User ID from https://alerthub.io",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "ALERTHUB_API_KEY",
+          "description": "Your AlertHub API Key (X-API-KEY) from https://alerthub.io",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "alerthub": {
+      "command": "mcp-server",
+      "env": {
+        "ALERTHUB_USER_ID": "YOUR_USER_ID",
+        "ALERTHUB_API_KEY": "YOUR_API_KEY"
+      }
+    }
+  }
+}

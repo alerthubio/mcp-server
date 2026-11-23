@@ -1,0 +1,90 @@
+name: Release & Publish MCP Server
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+
+      - name: Run GoReleaser (Cross-Platform Binaries)
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          distribution: goreleaser
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: |
+            ghcr.io/alerthubio/mcp-server
+
+      - name: Extract clean version
+        id: ver
+        run: echo "clean=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push multi-arch OCI image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ steps.ver.outputs.clean }}
+          tags: |
+            ghcr.io/alerthubio/mcp-server:${{ github.ref_name }}
+            ghcr.io/alerthubio/mcp-server:latest
+
+      - name: Publish manifest to Official MCP Registry
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+          MCP_PUBLISHER_VERSION: v1.8.7
+        run: |
+          VERSION="${TAG_NAME#v}"
+
+          # Update top-level version and OCI image tag in server.json
+          jq --arg v "$VERSION" --arg tag "$TAG_NAME" '
+            .version = $v |
+            .packages[0].identifier = ("ghcr.io/alerthubio/mcp-server:" + $tag)
+          ' server.json > server.tmp && mv server.tmp server.json
+
+          # Download pinned mcp-publisher CLI and verify checksum
+          curl -fsSLO "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz"
+          curl -fsSLO "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/registry_${MCP_PUBLISHER_VERSION#v}_checksums.txt"
+          grep "mcp-publisher_linux_amd64.tar.gz" "registry_${MCP_PUBLISHER_VERSION#v}_checksums.txt" | sha256sum --check
+          tar -xzf mcp-publisher_linux_amd64.tar.gz mcp-publisher
+
+          ./mcp-publisher validate server.json
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
