@@ -11,7 +11,7 @@ ARG VERSION=dev
 
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
     go build -trimpath -ldflags="-s -w main.version=${VERSION}" \
-    -o /out/alerthub-mcp .
+    -o /out/alerthub-mcp cmd/main.go
 
 FROM alpine:3.21 AS certs
 RUN apk --no-cache add ca-certificates
