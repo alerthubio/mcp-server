@@ -10,7 +10,7 @@ ARG TARGETARCH=amd64
 ARG VERSION=dev
 
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} \
-    go build -trimpath -ldflags="-s -w main.version=${VERSION}" \
+    go build -trimpath -ldflags="-s -w -X main.version=${VERSION}" \
     -o /out/alerthub-mcp cmd/main.go
 
 FROM alpine:3.21 AS certs
