@@ -54,7 +54,7 @@ Fetches a bounded snapshot of recent events (`GET /api/events?index=1&count=...`
 ### 4. `list_profiles`
 Fetches a bounded snapshot of profiles available to the user (`GET /api/profiles?index=1&count=...`) 
 - `limit` *(integer, optional)*: Number of profiles to return (`1` to `20`, default: `10`).
-- `defaults` *(boolean, optional)*: Filter to exclude default profiles (default: true). 
+- `defaults` *(boolean, optional)*: Filter to include default profiles (default: true). 
 
 ---
 
