@@ -72,7 +72,7 @@ Download the latest archive for Linux, macOS, or Windows (`amd64` / `arm64`) fro
 
 ### Option 2: Install with Go
 ```bash
-go install https://github.com/alerthubio/mcp-server/cmd/alerthub-mcp@latest
+go install github.com/alerthubio/mcp-server/cmd/alerthub-mcp@latest
 ```
 
 ### Option 3: Docker / OCI Image
