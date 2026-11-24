@@ -9,7 +9,7 @@ before:
 
 builds:
   - id: alerthub-mcp
-    main: cmd/main.go
+    main: ./cmd/alerthub-mcp
     binary: alerthub-mcp
     env:
       - CGO_ENABLED=0
