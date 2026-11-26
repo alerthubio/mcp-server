@@ -55,7 +55,7 @@ jobs:
         with:
           images: |
             ghcr.io/alerthubio/mcp-server
-            alerthubio/mcp-server
+            alerthub/mcp-server
           tags: |
             type=ref,event=tag
             type=raw,value=latest,enable={{is_default_branch}}
@@ -86,7 +86,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: alerthubio/mcp-server
+          repository: alerthub/mcp-server
           short-description: Official AlertHub MCP server for sending and scheduling multi-channel alerts from AI agents
           readme-filepath: ./README.md
 
